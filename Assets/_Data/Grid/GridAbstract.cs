@@ -17,7 +17,7 @@ public abstract class GridAbstract : SaiMonoBehaviour
     {
         if (this.ctrl != null) return;
         this.ctrl = transform.parent.GetComponent<GridManagerCtrl>();
-        Debug.LogWarning(transform.name + " LoadCtrl", gameObject);
+        Debug.Log(transform.name + " LoadCtrl", gameObject);
     }
 
 }
