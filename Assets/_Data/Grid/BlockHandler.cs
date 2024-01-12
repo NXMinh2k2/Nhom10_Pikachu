@@ -10,14 +10,10 @@ public class BlockHandler : GridAbstract
 
     public virtual void SetNode(BlockCtrl blockCtrl)
     {
-        Debug.Log("SetNode: " + blockCtrl.name);
-        if (this.IsBlockRemoved(blockCtrl)) return;
-
         Vector3 pos;
         Transform chooseObj;
         if (this.firstBlock == null)
         {
-            this.ctrl.pathfinding.DataReset();
             this.firstBlock = blockCtrl;
             pos = blockCtrl.transform.position;
             chooseObj = this.ctrl.blockSpawner.Spawn(BlockSpawner.CHOOSE, pos, Quaternion.identity);
@@ -30,8 +26,7 @@ public class BlockHandler : GridAbstract
         chooseObj = this.ctrl.blockSpawner.Spawn(BlockSpawner.CHOOSE, pos, Quaternion.identity);
         chooseObj.gameObject.SetActive(true);
 
-        if (this.firstBlock != this.lastBlock
-            && this.firstBlock.blockID == this.lastBlock.blockID)
+        if(this.firstBlock.blockID == this.lastBlock.blockID)
         {
             bool isPathFound = this.ctrl.pathfinding.FindPath(this.firstBlock, this.lastBlock);
             if (isPathFound) this.FreeBlocks();
@@ -39,12 +34,7 @@ public class BlockHandler : GridAbstract
 
         this.firstBlock = null;
         this.lastBlock = null;
-    }
-
-    protected virtual bool IsBlockRemoved(BlockCtrl blockCtrl)
-    {
-        Node node = blockCtrl.blockData.node;
-        return !node.occupied && node.blockPlaced;
+        this.ctrl.pathfinding.DataReset();
     }
 
     protected virtual void FreeBlocks()

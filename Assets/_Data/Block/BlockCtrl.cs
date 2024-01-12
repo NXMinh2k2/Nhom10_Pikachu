@@ -5,8 +5,7 @@ using UnityEngine;
 public class BlockCtrl : SaiMonoBehaviour
 {
     [Header("Block Ctrl")]
-    public SpriteRenderer spriteRender;
-    public Sprite sprite;
+    public SpriteRenderer sprite;
     public string blockID = "#";
     public BlockData blockData;
     public List<BlockCtrl> neighbors = new List<BlockCtrl>();
@@ -20,9 +19,9 @@ public class BlockCtrl : SaiMonoBehaviour
 
     protected virtual void LoadModel()
     {
-        if (this.spriteRender != null) return;
+        if (this.sprite != null) return;
         Transform model = transform.Find("Model");
-        this.spriteRender = model.GetComponent<SpriteRenderer>();
+        this.sprite = model.GetComponent<SpriteRenderer>();
         Debug.Log(transform.name + " LoadModel", gameObject);
     }
 
@@ -31,11 +30,5 @@ public class BlockCtrl : SaiMonoBehaviour
         if (this.blockData != null) return;
         this.blockData = transform.Find("BlockData").GetComponent<BlockData>();
         Debug.Log(transform.name + " LoadBlockData", gameObject);
-    }
-
-    public virtual void SetSprite(Sprite sprite)
-    {
-        this.sprite = sprite;
-        this.spriteRender.sprite = sprite;
     }
 }

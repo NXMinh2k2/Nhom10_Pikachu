@@ -1,5 +1,5 @@
 using System;
-public abstract class AbstractPathfinding : SaiMonoBehaviour
+public interface IPathfinding
 {
     public abstract bool FindPath(BlockCtrl startBlock, BlockCtrl targetBlock);
 

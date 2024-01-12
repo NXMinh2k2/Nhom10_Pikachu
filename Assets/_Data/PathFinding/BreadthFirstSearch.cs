@@ -1,29 +1,16 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BreadthFirstSearch : AbstractPathfinding
+public class BreadthFirstSearch : GridAbstract, IPathfinding
 {
     [Header("Breadth First Search")]
-    public GridManagerCtrl ctrl;
     public List<Node> queue = new List<Node>();
     public List<Node> finalPath = new List<Node>();
     public List<NodeStep> cameFromNodes = new List<NodeStep>();
     public List<Node> visited = new List<Node>();
 
-    protected override void LoadComponents()
-    {
-        base.LoadComponents();
-        this.LoadCtrl();
-    }
-
-    protected virtual void LoadCtrl()
-    {
-        if (this.ctrl != null) return;
-        this.ctrl = transform.parent.GetComponent<GridManagerCtrl>();
-        Debug.LogWarning(transform.name + " LoadCtrl", gameObject);
-    }
-
-    public override void DataReset()
+    public virtual void DataReset()
     {
         this.queue = new List<Node>();
         this.finalPath = new List<Node>();
@@ -31,7 +18,7 @@ public class BreadthFirstSearch : AbstractPathfinding
         this.visited = new List<Node>();
     }
 
-    public override bool FindPath(BlockCtrl startBlock, BlockCtrl targetBlock)
+    public virtual bool FindPath(BlockCtrl startBlock, BlockCtrl targetBlock)
     {
         //Debug.Log("FindPath");
         Node startNode = startBlock.blockData.node;
@@ -74,7 +61,7 @@ public class BreadthFirstSearch : AbstractPathfinding
 
         }
 
-        //this.ShowVisited();
+        this.ShowVisited();
         this.ShowPath();
 
         return this.IsPathFound();
@@ -83,6 +70,7 @@ public class BreadthFirstSearch : AbstractPathfinding
     protected virtual bool IsPathFound()
     {
         int nodeCount = this.finalPath.Count;
+        //Debug.Log("nodeCount: " + nodeCount);
         return nodeCount > 0;
     }
 
@@ -183,20 +171,15 @@ public class BreadthFirstSearch : AbstractPathfinding
 
     protected virtual int CountDirectionFromSteps(List<NodeStep> steps)
     {
-        NodeDirections lastDirection = NodeDirections.noDirection;
-        NodeDirections currentDirection;
-        int turnCount = 0;
+        NodeDirections nodeDirection;
+        List<NodeDirections> directions = new List<NodeDirections>();
         foreach (NodeStep nodeStep in steps)
         {
-            currentDirection = nodeStep.direction;
-            if(currentDirection != lastDirection)
-            {
-                lastDirection = currentDirection;
-                turnCount++;
-            }
+            nodeDirection = nodeStep.direction;
+            if (directions.Contains(nodeDirection)) continue;
+            directions.Add(nodeDirection);
         }
-
-        return turnCount;
+        return directions.Count;
     }
 
     protected virtual List<NodeStep> BuildNodeStepPath(Node currentNode, Node startNode)
@@ -212,7 +195,7 @@ public class BreadthFirstSearch : AbstractPathfinding
             if (step.fromNode == startNode) break;
         }
 
-        //this.ShowScanStep(currentNode);
+        this.ShowScanStep(currentNode);
         return steps;
     }
 
