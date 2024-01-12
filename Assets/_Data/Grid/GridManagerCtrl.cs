@@ -9,10 +9,9 @@ public class GridManagerCtrl : SaiMonoBehaviour
     public static GridManagerCtrl Instance => instance;
 
     public BlockSpawner blockSpawner;
-    public BlockHandler blockHandler;
-    public BlockAuto blockAuto;
-    public GridSystem gridSystem;
-    public AbstractPathfinding pathfinding;
+    public IPathfinding pathfinding;
+    public BlockCtrl firstBlock;
+    public BlockCtrl lastBlock;
 
     protected override void Awake()
     {
@@ -25,44 +24,48 @@ public class GridManagerCtrl : SaiMonoBehaviour
     {
         base.LoadComponents();
         this.LoadSpawner();
-        this.LoadBlockAuto();
         this.LoadPathfinding();
-        this.LoadBlockHandler();
-        this.LoadGridSystem();
     }
 
     protected virtual void LoadSpawner()
     {
         if (this.blockSpawner != null) return;
         this.blockSpawner = transform.Find("BlockSpawner").GetComponent<BlockSpawner>();
-        Debug.LogWarning(transform.name + " LoadSpawner", gameObject);
-    }
-
-    protected virtual void LoadBlockAuto()
-    {
-        if (this.blockAuto != null) return;
-        this.blockAuto = transform.Find("BlockAuto").GetComponent<BlockAuto>();
-        Debug.LogWarning(transform.name + " LoadBlockAuto", gameObject);
-    }
-
-    protected virtual void LoadBlockHandler()
-    {
-        if (this.blockHandler != null) return;
-        this.blockHandler = transform.Find("BlockHandler").GetComponent<BlockHandler>();
-        Debug.LogWarning(transform.name + " LoadBlockHandler", gameObject);
-    }
-
-    protected virtual void LoadGridSystem()
-    {
-        if (this.gridSystem != null) return;
-        this.gridSystem = transform.Find("GridSystem").GetComponent<GridSystem>();
-        Debug.LogWarning(transform.name + " LoadGridSystem", gameObject);
+        Debug.Log(transform.name + " LoadSpawner", gameObject);
     }
 
     protected virtual void LoadPathfinding()
     {
         if (this.pathfinding != null) return;
-        this.pathfinding = transform.GetComponentInChildren<AbstractPathfinding>();
-        Debug.LogWarning(transform.name + " LoadPathfinding", gameObject);
+        this.pathfinding = transform.GetComponentInChildren<IPathfinding>();
+        Debug.Log(transform.name + " LoadPathfinding", gameObject);
+    }
+
+    public virtual void SetNode(BlockCtrl blockCtrl)
+    {
+        if(this.firstBlock != null && this.lastBlock != null)
+        {
+            this.pathfinding.FindPath(this.firstBlock, this.lastBlock);
+            this.firstBlock = null;
+            this.lastBlock = null;
+            Debug.Log("Reset blocks");
+            return;
+        }
+
+        Vector3 pos;
+        Transform chooseObj;
+        if (this.firstBlock == null)
+        {
+            this.firstBlock = blockCtrl;
+            pos = blockCtrl.transform.position;
+            chooseObj = this.blockSpawner.Spawn(BlockSpawner.CHOOSE, pos, Quaternion.identity);
+            chooseObj.gameObject.SetActive(true);
+            return;
+        }
+
+        this.lastBlock = blockCtrl;
+        pos = blockCtrl.transform.position;
+        chooseObj = this.blockSpawner.Spawn(BlockSpawner.CHOOSE, pos, Quaternion.identity);
+        chooseObj.gameObject.SetActive(true);
     }
 }

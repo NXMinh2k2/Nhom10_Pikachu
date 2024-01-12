@@ -11,7 +11,6 @@ public class Node
     public float posX = 0;
     public int weight = 1;
     public bool occupied = false;
-    public bool blockPlaced = false;
     public int nodeId;
     public Node up;
     public Node right;
@@ -30,10 +29,5 @@ public class Node
             left
         };
         return nodes;
-    }
-
-    public virtual string Name()
-    {
-        return this.x + "x" + this.y;
     }
 }

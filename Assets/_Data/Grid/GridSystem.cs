@@ -7,12 +7,10 @@ public class GridSystem : GridAbstract
     [Header("Grid System")]
     public int width = 18;
     public int height = 11;
-    public float offsetX = 0.2f;
+    private float offsetX = 0.2f;
     public BlocksProfileSO blocksProfile;
     public List<Node> nodes;
-    public List<BlockCtrl> blocks;
     public List<int> nodeIds;
-    public List<Node> freeNodes = new List<Node>();
 
     protected override void LoadComponents()
     {
@@ -132,30 +130,15 @@ public class GridSystem : GridAbstract
                 Transform block = this.ctrl.blockSpawner.Spawn(BlockSpawner.BLOCK, pos, Quaternion.identity);
                 BlockCtrl blockCtrl = block.GetComponent<BlockCtrl>();
                 blockCtrl.blockData.SetSprite(sprite);
-                GridManagerCtrl.Instance.gridSystem.blocks.Add(blockCtrl);
 
                 this.LinkNodeBlock(node, blockCtrl);
                 block.name = "Block_" + node.x.ToString() + "_" + node.y.ToString();
 
                 block.gameObject.SetActive(true);
 
-                this.NodeOccupied(node);
+                node.occupied = true;
             }
         }
-    }
-
-    public virtual void NodeOccupied(Node node)
-    {
-        node.occupied = true;
-        node.blockPlaced = true;
-    }
-
-    public virtual void NodeFree(Node node)
-    {
-        this.freeNodes.Add(node);
-        node.occupied = false;
-        node.blockCtrl.spriteRender.sprite = null;
-        this.blocks.Remove(node.blockCtrl);
     }
 
     protected virtual Node GetRandomNode()
@@ -185,11 +168,5 @@ public class GridSystem : GridAbstract
     {
         blockCtrl.blockData.SetNode(node);
         node.blockCtrl = blockCtrl;
-    }
-
-    public virtual BlockCtrl GetRandomBlock()
-    {
-        int randIndex = Random.Range(0, this.blocks.Count);
-        return this.blocks[randIndex];
     }
 }
